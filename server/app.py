@@ -1,10 +1,14 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-import sqlite3
-from sqlite3 import Error
+from pysondb import db
 from flask_socketio import SocketIO
+#import datetime
+from datetime import datetime
+import time
+import pendulum
+
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins='https://a3281e8a.vue-feedback-display.pages.dev', logger=True, engineio_logger=True)
+socketio = SocketIO(app, cors_allowed_origins='*', logger=True, engineio_logger=True)
 api_v2_cors_config = {
   "origins": ["*"],
   "methods": ["OPTIONS", "GET", "POST"],
@@ -18,11 +22,7 @@ def handle_socket(data):
     print("inside sockey!")
     print(data)
     socketio.emit('insert',{'message':'New data inserted'}, callback=messageReceived)
-    response = jsonify({"MESSAGE": "Event Triggered!!"})
-    response.headers['Access-Control-Allow-Methods']='*'
-    response.headers['Access-Control-Allow-Origin']='*'
-    response.headers['Vary']='Origin'
-    return response 
+    return jsonify({"MESSAGE": "Event Triggered!!"})
 
 @app.route('/', methods=['OPTIONS'])
 def pong():
@@ -30,27 +30,21 @@ def pong():
     response = jsonify({
         'status': "SUCCESS!!! options",
     })
-    response.headers['Access-Control-Allow-Methods']='*'
-    response.headers['Access-Control-Allow-Origin']='*'
-    response.headers['Vary']='Origin'
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
-
 @app.route('/', methods=['GET'])
 def pinggggg():
     handle_socket('test')
     response = jsonify({
         'status': "SUCCESS!!!",
     })
-    response.headers['Access-Control-Allow-Methods']='*'
-    response.headers['Access-Control-Allow-Origin']='*'
-    response.headers['Vary']='Origin'
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
-
 @app.route('/poll/', methods=['GET'])
 def getData():
-    seeResponse()
+    
     return jsonify({
-        'status': seeResponse(),
+        'status': "poll",
     })
 
 @app.route('/1/', methods=['POST'])
@@ -59,72 +53,33 @@ def response1():
     insertResponse("1")
     #seeResponse()
     socketio.emit('insert',{'message':'1'})
-    response = jsonify({
+    return jsonify({
         'status': "Received POST 1!",
     })
-    response.headers['Access-Control-Allow-Methods']='*'
-    response.headers['Access-Control-Allow-Origin']='*'
-    response.headers['Vary']='Origin'
-    return response
 @app.route('/2/', methods=['POST'])
 def response2():
     insertResponse("2")
     #seeResponse()
     socketio.emit('insert',{'message':'2'})
-    response = jsonify({
+    return jsonify({
         'status': "Received POST 2!",
     })
-    response.headers['Access-Control-Allow-Methods']='*'
-    response.headers['Access-Control-Allow-Origin']='*'
-    response.headers['Vary']='Origin'
-    return response
 @app.route('/3/', methods=['POST'])
 def response3():
     insertResponse("3")
     #seeResponse()
     socketio.emit('insert',{'message':'3'})
-    response = jsonify({
+    return jsonify({
         'status': "Received POST 3!",
     })
-    response.headers['Access-Control-Allow-Methods']='*'
-    response.headers['Access-Control-Allow-Origin']='*'
-    response.headers['Vary']='Origin'
-    return response
 
 def insertResponse(x):
-    """ create a database connection to a database that resides
-        in the memory
-    """
-    connection_obj = sqlite3.connect('feedback.db')
- 
-    # cursor object
-    cursor_obj = connection_obj.cursor()
- 
-
-    table = """INSERT INTO FEEDBACK(RESPONSE) VALUES(""" + x +  """)"""
-    
-    cursor_obj.execute(table)
-    print("done inserting")
-    connection_obj.commit()
-    
-    # Close the connection
-    connection_obj.close()
+    a=db.getDb("feedback.json")
+    ist = pendulum.timezone('Asia/Calcutta')
+    res = {"response": x, "timestamp": str(datetime.now(ist))}
+    a.add(res)
+    print(a.getAll())
      
-def seeResponse():
-    
-    connection_obj = sqlite3.connect('livefeedback.db')
- 
-    # cursor object
-    cursor_obj = connection_obj.cursor()
-    select = "SELECT RESPONSE FROM LIVEFEEDBACK"
-    l = []
-    for raw in cursor_obj.execute(select):
-        print(raw)
-        l.append(raw)
-    print("------>", cursor_obj.execute(select))
-    print("done")
-    connection_obj.close()
-    return l
 
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
@@ -136,57 +91,35 @@ def liveresponse1():
     seeResponse()
     #seeResponse()
     socketio.emit('insert',{'message':'1'})
-    response = jsonify({
-        'status': "Received LIVEPOST 1!",
+    return jsonify({
+        'status': "Received POST 1!",
     })
-    response.headers['Access-Control-Allow-Methods']='*'
-    response.headers['Access-Control-Allow-Origin']='*'
-    response.headers['Vary']='Origin'
-    return response
 @app.route('/live2/', methods=['POST'])
 def liveresponse2():
     insertLiveResponse("2")
     #seeResponse()
     socketio.emit('insert',{'message':'2'})
-    response = jsonify({
-        'status': "Received LIVEPOST 1!",
+    return jsonify({
+        'status': "Received POST 2!",
     })
-    response.headers['Access-Control-Allow-Methods']='*'
-    response.headers['Access-Control-Allow-Origin']='*'
-    response.headers['Vary']='Origin'
-    return response
 @app.route('/live3/', methods=['POST'])
 def liveresponse3():
     insertLiveResponse("3")
     #seeResponse()
     socketio.emit('insert',{'message':'3'})
-    response = jsonify({
-        'status': "Received LIVEPOST 3!",
+    return jsonify({
+        'status': "Received POST 3!",
     })
-    response.headers['Access-Control-Allow-Methods']='*'
-    response.headers['Access-Control-Allow-Origin']='*'
-    response.headers['Vary']='Origin'
-    return response
 
 def insertLiveResponse(x):
-    """ create a database connection to a database that resides
-        in the memory
-    """
-    connection_obj = sqlite3.connect('livefeedback.db')
-    #print(x)
-    # cursor object
-    cursor_obj = connection_obj.cursor()
- 
-    # table = """ CREATE TABLE LIVEFEEDBACK(RESPONSE_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    # RESPONSE TEXT);"""
-    table = """INSERT INTO LIVEFEEDBACK(RESPONSE) VALUES(""" + x +  """)"""
+    a=db.getDb("livefeedback.json")
+    ist = pendulum.timezone('Asia/Calcutta')
+    res = {"response": x, "timestamp": str(datetime.now(ist))}
+    a.add(res)
+    print(a.getAll())
     
-    cursor_obj.execute(table)
-    # print("done inserting")
-    connection_obj.commit()
-    
-    # Close the connection
-    connection_obj.close()
+
+
 if __name__ == '__main__':
     
     socketio.run(app, debug=True, host='0.0.0.0', port=8080)
