@@ -26,16 +26,22 @@ def pong():
     response = jsonify({
         'status': "SUCCESS!!! options",
     })
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers['Access-Control-Allow-Methods']='*'
+    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Vary']='Origin'
     return response
+
 @app.route('/', methods=['GET'])
 def pinggggg():
     handle_socket('test')
     response = jsonify({
         'status': "SUCCESS!!!",
     })
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers['Access-Control-Allow-Methods']='*'
+    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Vary']='Origin'
     return response
+
 @app.route('/poll/', methods=['GET'])
 def getData():
     seeResponse()
@@ -49,43 +55,37 @@ def response1():
     insertResponse("1")
     #seeResponse()
     socketio.emit('insert',{'message':'1'})
-    return jsonify({
+    response = jsonify({
         'status': "Received POST 1!",
     })
+    response.headers['Access-Control-Allow-Methods']='*'
+    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Vary']='Origin'
+    return response
 @app.route('/2/', methods=['POST'])
 def response2():
     insertResponse("2")
     #seeResponse()
     socketio.emit('insert',{'message':'2'})
-    return jsonify({
+    response = jsonify({
         'status': "Received POST 2!",
     })
+    response.headers['Access-Control-Allow-Methods']='*'
+    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Vary']='Origin'
+    return response
 @app.route('/3/', methods=['POST'])
 def response3():
     insertResponse("3")
     #seeResponse()
     socketio.emit('insert',{'message':'3'})
-    return jsonify({
+    response = jsonify({
         'status': "Received POST 3!",
     })
-
-@app.route('/4/', methods=['POST'])
-def response4():
-    insertResponse("4")
-    #seeResponse()
-    return jsonify({
-        'status': "Received POST 4!",
-    })
-
-@app.route('/5/', methods=['POST'])
-def response5():
-    insertResponse("5")
-    #seeResponse()
-    return jsonify({
-        'status': "Received POST 5!",
-    })
-
-
+    response.headers['Access-Control-Allow-Methods']='*'
+    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Vary']='Origin'
+    return response
 
 def insertResponse(x):
     """ create a database connection to a database that resides
@@ -132,25 +132,37 @@ def liveresponse1():
     seeResponse()
     #seeResponse()
     socketio.emit('insert',{'message':'1'})
-    return jsonify({
-        'status': "Received POST 1!",
+    response = jsonify({
+        'status': "Received LIVEPOST 1!",
     })
+    response.headers['Access-Control-Allow-Methods']='*'
+    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Vary']='Origin'
+    return response
 @app.route('/live2/', methods=['POST'])
 def liveresponse2():
     insertLiveResponse("2")
     #seeResponse()
     socketio.emit('insert',{'message':'2'})
-    return jsonify({
-        'status': "Received POST 2!",
+    response = jsonify({
+        'status': "Received LIVEPOST 1!",
     })
+    response.headers['Access-Control-Allow-Methods']='*'
+    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Vary']='Origin'
+    return response
 @app.route('/live3/', methods=['POST'])
 def liveresponse3():
     insertLiveResponse("3")
     #seeResponse()
     socketio.emit('insert',{'message':'3'})
-    return jsonify({
-        'status': "Received POST 3!",
+    response = jsonify({
+        'status': "Received LIVEPOST 3!",
     })
+    response.headers['Access-Control-Allow-Methods']='*'
+    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Vary']='Origin'
+    return response
 
 def insertLiveResponse(x):
     """ create a database connection to a database that resides
