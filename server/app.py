@@ -18,7 +18,11 @@ def handle_socket(data):
     print("inside sockey!")
     print(data)
     socketio.emit('insert',{'message':'New data inserted'}, callback=messageReceived)
-    return jsonify({"MESSAGE": "Event Triggered!!"})
+    response = jsonify({"MESSAGE": "Event Triggered!!"})
+    response.headers['Access-Control-Allow-Methods']='*'
+    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Vary']='Origin'
+    return response 
 
 @app.route('/', methods=['OPTIONS'])
 def pong():
