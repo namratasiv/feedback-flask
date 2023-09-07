@@ -4,7 +4,7 @@ import sqlite3
 from sqlite3 import Error
 from flask_socketio import SocketIO
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins='*', logger=True, engineio_logger=True)
+socketio = SocketIO(app, cors_allowed_origins='https://a3281e8a.vue-feedback-display.pages.dev', logger=True, engineio_logger=True)
 api_v2_cors_config = {
   "origins": ["*"],
   "methods": ["OPTIONS", "GET", "POST"],
