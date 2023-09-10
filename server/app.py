@@ -16,6 +16,8 @@ api_v2_cors_config = {
 }
 CORS(app, resources={"/*": api_v2_cors_config})
 
+ist = pendulum.timezone('Asia/Calcutta')
+
 
 @socketio.on('insert')
 def handle_socket(data):
@@ -28,7 +30,7 @@ def handle_socket(data):
 def pong():
     
     response = jsonify({
-        'status': "SUCCESS!!! options",
+        'status': "Options Successful!",
     })
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
@@ -53,6 +55,7 @@ def response1():
     insertResponse("1")
     #seeResponse()
     socketio.emit('insert',{'message':'1'})
+    getResponse("1")
     return jsonify({
         'status': "Received POST 1!",
     })
@@ -60,6 +63,7 @@ def response1():
 def response2():
     insertResponse("2")
     #seeResponse()
+    getResponse("2")
     socketio.emit('insert',{'message':'2'})
     return jsonify({
         'status': "Received POST 2!",
@@ -68,6 +72,7 @@ def response2():
 def response3():
     insertResponse("3")
     #seeResponse()
+    getResponse("3")
     socketio.emit('insert',{'message':'3'})
     return jsonify({
         'status': "Received POST 3!",
@@ -75,7 +80,7 @@ def response3():
 
 def insertResponse(x):
     a=db.getDb("feedback.json")
-    ist = pendulum.timezone('Asia/Calcutta')
+    
     res = {"response": x, "timestamp": str(datetime.now(ist))}
     a.add(res)
     print(a.getAll())
@@ -118,7 +123,11 @@ def insertLiveResponse(x):
     a.add(res)
     print(a.getAll())
     
-
+def getResponse(x):
+    a=db.getDb("feedback.json")
+    data = a.getByQuery(query={"response": x})
+    print(len(data))
+    socketio.emit('update',{'response' + x :len(data)})
 
 if __name__ == '__main__':
     
